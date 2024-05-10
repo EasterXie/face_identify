@@ -86,9 +86,10 @@ def create_folder(directory, folder_name):
     # 检查文件夹是否存在，如果不存在则创建
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
-        st.success(f"文件夹 '{folder_name}' 已成功创建在 '{directory}' 下。")
+        # st.success(f"文件夹 '{folder_name}' 已成功创建在 '{directory}' 下。")
     else:
-        st.warning(f"文件夹 '{folder_name}' 在 '{directory}' 下已存在。")
+        # st.warning(f"文件夹 '{folder_name}' 在 '{directory}' 下已存在。")
+        pass
 
 
 

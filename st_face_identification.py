@@ -68,13 +68,13 @@ def create_connection():
 def insert1(conn, date, iD, name, grade, stClass):
     print(f"date = {date}")
     print(f"iD = {iD}")
-    sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号='{date+'-'+iD}'"
-    result = conn.execute(sql)
-    if not result:
-        sql = f"INSERT INTO SIGNIN_DATA (日期学号,姓名,年级,班级) VALUES " \
-            f"('{date+'-'+iD}','{name}','{grade}','{stClass}')"
-        conn.execute(sql)
-        conn.commit()
+    # sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号='{date+'-'+iD}'"
+    # result = conn.execute(sql)
+    # if not result:
+    sql = f"INSERT INTO SIGNIN_DATA (日期学号,姓名,年级,班级) VALUES " \
+        f"('{date+'-'+iD}','{name}','{grade}','{stClass}')"
+    conn.execute(sql)
+    conn.commit()
 
 def add_signin(conn, date, iD):
     sql = f"SELECT * FROM STUDENTS_DATA WHERE 学号='{iD}'"
@@ -84,9 +84,15 @@ def add_signin(conn, date, iD):
     gender = result[0][2]
     grade = result[0][3]
     stClass = result[0][4]
-    count = result[0][5]+1
-    insert1(conn, date, iD, name, grade, stClass)
-    update(conn, iD, iD, name, gender, grade, stClass, count)
+    
+    sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号='{date+'-'+iD}'"
+    result = conn.execute(sql)
+    if not result:
+        count = result[0][5]+1
+        insert1(conn, date, iD, name, grade, stClass)
+        update(conn, iD, iD, name, gender, grade, stClass, count)
+    else:
+        st.error("该学生当天已经签过到")
 
 def show_signin(conn):
     sql = "SELECT * FROM SIGNIN_DATA"
@@ -195,6 +201,9 @@ def delete(conn):
 def delete_all(conn):
     if st.button('清除所有学生数据'):
         sql = "DELETE FROM STUDENTS_DATA"
+        conn.execute(sql)
+        conn.commit()
+        sql = "DELETE FROM SIGNIN_DATA"
         conn.execute(sql)
         conn.commit()
         st.success('清除成功')
@@ -319,7 +328,11 @@ def camera_shot(conn):
             st.write('签到次数：', result[0][5])
         else:
             st.error('未找到该学生')
-    
+    sup_date = st.text_input("输入补充签到的日期以此格式 2024-05-10 ")
+    sup_id = st.text_input("输入补充签到的学号")
+    if st.button("补签"):
+        add_signin(conn, sup_date, sup_id)
+        st.success("补签成功")
     
 def main():
     # 创建或获取 session_state 对象
@@ -334,17 +347,15 @@ def main():
         st.title("课堂管家：学生面孔档案室")
         conn = create_connection()
         # conn1 = create_connection1()
-        menu = ["添加学生信息", "修改学生信息", "查询单个学生", "删除学生信息", "查询所有学生", "清除所有数据", "导入Excel数据", "采集人脸信息", "进行拍照签到"]
+        menu = ["导入Excel数据", "查询学生信息", "查询签到表", "进行拍照签到", "添加学生信息", "采集人脸信息", "修改学生信息", "删除学生信息", "清除所有数据"]
         choice = st.sidebar.selectbox("选择功能", menu)
 
         if   choice == "修改学生信息":
             modify(conn)
-        elif choice == "查询单个学生":
-            inquiry(conn)
         elif choice == "删除学生信息":
             delete(conn)
-        elif choice == "查询所有学生":
-
+        elif choice == "查询学生信息":
+            inquiry(conn)
             gender_options = get_options(conn, '性别')
             grade_options = get_options(conn, '年级')
             class_options = get_options(conn, '班级')
@@ -375,6 +386,12 @@ def main():
 
         elif choice == "进行拍照签到":
             camera_shot(conn)
+        elif choice == "查询签到表":
+            Date = st.text_input("输入日期")
+            if st.button("查找"):
+                show_single_signin(conn, Date)
+            if st.button("显示完整签到表"):
+                show_signin(conn)
         conn.close()
 
 def test_sign_table():
