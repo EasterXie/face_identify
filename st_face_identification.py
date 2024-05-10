@@ -295,7 +295,8 @@ def camera_shot(conn):
     if keras_file is not None:
         model_directory = "./model"
         model_path = f"{model_directory}/{keras_file.name}"
-        
+    
+    test_detection.create_folder('./','tmp')
     test_detection.catch_face_info_re("tmp", 20)
     
     if st.button("开始拍照签到"):
