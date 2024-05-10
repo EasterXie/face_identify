@@ -92,8 +92,10 @@ def add_signin(conn, date, iD):
         count = result[0][5]+1
         insert1(conn, date, iD, name, grade, stClass)
         update(conn, iD, iD, name, gender, grade, stClass, count)
+        return True
     else:
         st.error("该学生当天已经签过到")
+        return False
 
 def show_signin(conn):
     sql = "SELECT * FROM SIGNIN_DATA"
@@ -103,10 +105,10 @@ def show_signin(conn):
         columns = ['日期学号', '姓名', '年级', '班级']
         df = pd.DataFrame(result, columns=columns)
         st.dataframe(df)
-        return True
+
     else:
         st.error('没有签到信息')
-        return False
+
 
 def show_single_signin(conn, date):
     sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号 LIKE '{date}%'"
