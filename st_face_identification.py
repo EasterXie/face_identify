@@ -149,7 +149,7 @@ def add_st(conn):
     try:
         if st.button('添加'):
             insert(conn, iD, name, gender, grade, stClass, courseCount)
-            st.success('添加成功')
+            st.success('添加成功，记得录入人脸信息')
     except:
         st.error('该学生已添加')
 
@@ -388,34 +388,34 @@ def main():
         elif choice == "进行拍照签到":
             camera_shot(conn)
         elif choice == "查询签到表":
-            Date = st.text_input("输入日期")
+            Date = st.text_input("输入日期格式类似为: 2024-05-10")
             if st.button("查找"):
                 show_single_signin(conn, Date)
             if st.button("显示完整签到表"):
                 show_signin(conn)
         conn.close()
 
-def test_sign_table():
-    conn = create_connection()
-    excel_path = st.file_uploader("选择Excel文件", type="xlsx")
-    if excel_path is not None:
-        excel_input(conn, excel_path)
+# def test_sign_table():
+#     conn = create_connection()
+#     excel_path = st.file_uploader("选择Excel文件", type="xlsx")
+#     if excel_path is not None:
+#         excel_input(conn, excel_path)
         
-    if st.button("插入数据"):
-        date = [
-            '2024-05-10','2024-05-11','2024-05-11','2024-05-11','2024-03-10'
-        ]
-        id = [
-            '2023303051052', '2023303051053', '2023303051054', '2023303051055', '2023303051056'
-        ]
-        for u, v in zip(date,id):
-            add_signin(conn, u, v)
+#     if st.button("插入数据"):
+#         date = [
+#             '2024-05-10','2024-05-11','2024-05-11','2024-05-11','2024-03-10'
+#         ]
+#         id = [
+#             '2023303051052', '2023303051053', '2023303051054', '2023303051055', '2023303051056'
+#         ]
+#         for u, v in zip(date,id):
+#             add_signin(conn, u, v)
 
-        show_signin(conn)
+#         show_signin(conn)
             
-    Date = st.text_input("输入日期")
-    if st.button("查找"):
-        show_single_signin(conn, Date)
+#     Date = st.text_input("输入日期")
+#     if st.button("查找"):
+#         show_single_signin(conn, Date)
 
 
 
