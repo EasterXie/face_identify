@@ -32,8 +32,7 @@ def create_connection():
                       );
                       
                       CREATE TABLE IF NOT EXISTS SIGNIN_DATA
-                        (日期     CHAR(50)    PRIMARY KEY  NOT NULL,
-                        学号                 CHAR(50)    NOT NULL,
+                        (日期学号     CHAR(50)    PRIMARY KEY  NOT NULL,
                         姓名                 CHAR(50)    NOT NULL,
                         年级                 CHAR(50)    NOT NULL,
                         班级                 TEXT        NOT NULL
@@ -67,8 +66,10 @@ def create_connection():
 #         return conn1
     
 def insert1(conn, date, iD, name, grade, stClass):
-    sql = f"INSERT INTO SIGNIN_DATA (日期,学号,姓名,年级,班级) VALUES " \
-          f"({date},'{iD}','{name}','{grade}','{stClass}')"
+    print(f"date = {date}")
+    print(f"iD = {iD}")
+    sql = f"INSERT INTO SIGNIN_DATA (日期学号,姓名,年级,班级) VALUES " \
+          f"('{date+'-'+iD}','{name}','{grade}','{stClass}')"
     conn.execute(sql)
     conn.commit()
 
@@ -89,18 +90,18 @@ def show_signin(conn):
     result = conn.execute(sql).fetchall()
     
     if result:
-        columns = ['日期', '学号', '姓名', '年级', '班级']
+        columns = ['日期学号', '姓名', '年级', '班级']
         df = pd.DataFrame(result, columns=columns)
         st.dataframe(df)
     else:
         st.error('没有签到信息')
 
 def show_single_signin(conn, date):
-    sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期='{date}'"
+    sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号 LIKE '{date}%'"
     result = conn.execute(sql).fetchall()
 
     if result:
-        columns = ['日期', '学号', '姓名', '年级', '班级']
+        columns = ['日期学号', '姓名', '年级', '班级']
         df = pd.DataFrame(result, columns=columns)
         st.dataframe(df)
     else:
@@ -363,7 +364,30 @@ def main():
             camera_shot(conn)
         conn.close()
 
+def test_sign_table():
+    conn = create_connection()
+    excel_path = st.file_uploader("选择Excel文件", type="xlsx")
+    if excel_path is not None:
+        excel_input(conn, excel_path)
+        
+    if st.button("插入数据"):
+        date = [
+            '2024-05-10','2024-05-11','2024-05-11','2024-05-11','2024-03-10'
+        ]
+        id = [
+            '2023303051052', '2023303051053', '2023303051054', '2023303051055', '2023303051056'
+        ]
+        for u, v in zip(date,id):
+            add_signin(conn, u, v)
+
+        show_signin(conn)
+            
+    Date = st.text_input("输入日期")
+    if st.button("查找"):
+        show_single_signin(conn, Date)
+
 
 
 if __name__ == '__main__':
     main()
+    # test_sign_table()

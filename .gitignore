@@ -7,3 +7,4 @@ database_test.py
 signin_data.csv
 student_data.csv
 test.ipynb
+*.db
