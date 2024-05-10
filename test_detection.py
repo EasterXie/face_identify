@@ -34,10 +34,10 @@ class FaceCaptureProcessor(VideoProcessorBase):
 def catch_face_info(iD, top_num):
     path_name = f"./data/{iD}"
     sign = "frontalface"
-    faceCapProcess = FaceCaptureProcessor(path_name, top_num, sign)
+    # faceCapProcess = FaceCaptureProcessor(path_name, top_num, sign)
     webrtc_ctx = webrtc_streamer(
         key="example",
-        video_processor_factory=lambda: faceCapProcess,
+        video_processor_factory=lambda: FaceCaptureProcessor(path_name, top_num, sign),
         rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True
@@ -152,6 +152,7 @@ def face_test(model_path):
 
 
 def face_test2():
+    create_folder('./','tmp')
     catch_face_info_re('./tmp',20)
     
     if st.button("签到"):
