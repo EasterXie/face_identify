@@ -15,28 +15,29 @@ import datetime
 
 def create_connection():
     try:
-        conn = sqlite3.connect('mydata.sqlite') 
+        conn = sqlite3.connect('mydata.db') 
         cur = conn.cursor() 
         print('创建学生/连接数据库')
     except:
         print('连接学生表失败/待创建学生表已经存在')
         return
     try:          
-        cur.execute('''CREATE TABLE STUDENTS_DATA
+        cur.executescript('''CREATE TABLE IF NOT EXISTS STUDENTS_DATA
                      (学号     CHAR(50)    PRIMARY KEY  NOT NULL,
                       姓名                 CHAR(50)    NOT NULL,
                       性别                 CHAR(50)    NOT NULL,
                       年级                 CHAR(50)    NOT NULL,
                       班级                 TEXT        NOT NULL,
                       签到次数             integer   NOT NULL
-                      );''')
-        cur.execute('''CREATE TABLE IF NOT EXISTS SIGNIN_DATA
-                (日期     CHAR(50)    PRIMARY KEY  NOT NULL,
-                学号                 CHAR(50)    NOT NULL,
-                姓名                 CHAR(50)    NOT NULL,
-                年级                 CHAR(50)    NOT NULL,
-                班级                 TEXT        NOT NULL,
-                );''')
+                      );
+                      
+                      CREATE TABLE IF NOT EXISTS SIGNIN_DATA
+                        (日期     CHAR(50)    PRIMARY KEY  NOT NULL,
+                        学号                 CHAR(50)    NOT NULL,
+                        姓名                 CHAR(50)    NOT NULL,
+                        年级                 CHAR(50)    NOT NULL,
+                        班级                 TEXT        NOT NULL
+                        );''')
         print('学生表创建成功')
     except:
         print('已成功创建学生表')
@@ -68,8 +69,7 @@ def create_connection():
 def insert1(conn, date, iD, name, grade, stClass):
     sql = f"INSERT INTO SIGNIN_DATA (日期,学号,姓名,年级,班级) VALUES " \
           f"('{date}','{iD}','{name}','{grade}','{stClass}')"
-    cur = conn.cursor()
-    cur.execute(sql)
+    conn.execute(sql)
     conn.commit()
 
 def add_signin(conn, date, iD):
@@ -86,8 +86,7 @@ def add_signin(conn, date, iD):
 
 def show_signin(conn):
     sql = "SELECT * FROM SIGNIN_DATA"
-    cur = conn.cursor()
-    result = cur.execute(sql).fetchall()
+    result = conn.execute(sql).fetchall()
     
     if result:
         columns = ['日期', '学号', '姓名', '年级', '班级']
@@ -98,8 +97,7 @@ def show_signin(conn):
 
 def show_single_signin(conn, date):
     sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期='{date}'"
-    cur = conn.cursor()
-    result = cur.execute(sql).fetchall()
+    result = conn.execute(sql).fetchall()
 
     if result:
         columns = ['日期', '学号', '姓名', '年级', '班级']
@@ -147,8 +145,7 @@ def add_shop(conn):
 def modify(conn):
     iD0 = st.text_input('请输入要更新的学生信息：')
     sql = f"SELECT * FROM STUDENTS_DATA WHERE 学号='{iD0}'"
-    cur = conn.cursor()
-    result = cur.execute(sql).fetchall()
+    result = conn.execute(sql).fetchall()
 
     if result:
         iD1 = st.text_input('请输入修改后的学生学号')
@@ -167,8 +164,7 @@ def modify(conn):
 def inquiry(conn):
     iD0 = st.text_input('请输入要查询的学生学号：')
     sql = f"SELECT * FROM STUDENTS_DATA WHERE 学号='{iD0}'"
-    cur = conn.cursor()
-    result = cur.execute(sql).fetchall()
+    result = conn.execute(sql).fetchall()
 
     if result:
         st.write('学号：', result[0][0])
@@ -183,8 +179,7 @@ def inquiry(conn):
 def delete(conn):
     iD0 = st.text_input('请输入要删除的学生学号：')
     sql = f"SELECT * FROM STUDENTS_DATA WHERE 学号='{iD0}'"
-    cur = conn.cursor()
-    result = cur.execute(sql).fetchall()
+    result = conn.execute(sql).fetchall()
 
     if result:
         if st.button('删除'):
@@ -196,16 +191,14 @@ def delete(conn):
 def delete_all(conn):
     if st.button('清除所有学生数据'):
         sql = "DELETE FROM STUDENTS_DATA"
-        cur = conn.cursor()
-        cur.execute(sql)
+        conn.execute(sql)
         conn.commit()
         st.success('清除成功')
 
 
 def get_options(conn, column_name):
     sql = f"SELECT DISTINCT {column_name} FROM STUDENTS_DATA"
-    cur = conn.cursor()
-    result = cur.execute(sql).fetchall()
+    result = conn.execute(sql).fetchall()
     options = [item[0] for item in result]
     return options
 
@@ -220,8 +213,7 @@ def get_selected_options(options, column_name):
 
 def recommend_students(conn, selected_genders, selected_grades, selected_classes, selected_courseCounts):
     sql = f"SELECT * FROM STUDENTS_DATA WHERE 性别 IN ({','.join(['?']*len(selected_genders))}) AND 年级 IN ({','.join(['?']*len(selected_grades))}) AND 班级 IN ({','.join(['?']*len(selected_classes))}) AND 签到次数 IN ({','.join(['?']*len(selected_courseCounts))})"
-    cur = conn.cursor()
-    result = cur.execute(sql, [*selected_genders, *selected_grades, *selected_classes, *selected_courseCounts]).fetchall()
+    result = conn.execute(sql, [*selected_genders, *selected_grades, *selected_classes, *selected_courseCounts]).fetchall()
     
     if result:
         columns = ['学号', '姓名', '性别', '年级','班级','签到次数']
@@ -232,8 +224,7 @@ def recommend_students(conn, selected_genders, selected_grades, selected_classes
 
 def view_all_students(conn):
     sql = "SELECT * FROM STUDENTS_DATA"
-    cur = conn.cursor()
-    result = cur.execute(sql).fetchall()
+    result = conn.execute(sql).fetchall()
     
     if result:
         columns = ['学号', '姓名', '性别', '年级', '班级', '签到次数']
@@ -245,29 +236,25 @@ def view_all_students(conn):
 def insert(conn, iD, name, gender, grade, stClass, courseCount):
     sql = f"INSERT INTO STUDENTS_DATA (学号,姓名,性别,年级,班级,签到次数) VALUES " \
           f"('{iD}','{name}','{gender}','{grade}','{stClass}','{courseCount}')"
-    cur = conn.cursor()
-    cur.execute(sql)
+    conn.execute(sql)
     conn.commit()
 
 def replace(conn, iD, name, gender, grade, stClass, courseCount):
     sql = f"REPLACE INTO STUDENTS_DATA (学号,姓名,性别,年级,班级,签到次数) VALUES " \
           f"('{iD}','{name}','{gender}','{grade}','{stClass}','{courseCount}')"
-    cur = conn.cursor()
-    cur.execute(sql)
+    conn.execute(sql)
     conn.commit()
 
 def update(conn, iD0, iD1, name1, gender1, grade1, stClass1, courseCount1):
     sql = f"UPDATE STUDENTS_DATA SET 学号='{iD1}', 姓名='{name1}', 性别='{gender1}', " \
           f"年级='{grade1}', 班级='{stClass1}', 签到次数='{courseCount1}' " \
           f"WHERE 学号='{iD0}'"
-    cur = conn.cursor()
-    cur.execute(sql)
+    conn.execute(sql)
     conn.commit()
 
 def delete_row(conn, iD):
     sql = f"DELETE FROM STUDENTS_DATA WHERE 学号='{iD}'"
-    cur = conn.cursor()
-    cur.execute(sql)
+    conn.execute(sql)
     conn.commit()
 
 def excel_input(conn, excel_path):
