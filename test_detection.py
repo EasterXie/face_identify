@@ -117,7 +117,6 @@ def delete_images(folder_path):
 
 
 def face_test(model_path):
-    catch_face_info_re("tmp", 20)
     img_name = f'./tmp/frontalface_19.jpg'
     
     # if st.button("签到"):

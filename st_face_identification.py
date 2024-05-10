@@ -68,7 +68,7 @@ def create_connection():
     
 def insert1(conn, date, iD, name, grade, stClass):
     sql = f"INSERT INTO SIGNIN_DATA (日期,学号,姓名,年级,班级) VALUES " \
-          f"('{date}','{iD}','{name}','{grade}','{stClass}')"
+          f"({date},'{iD}','{name}','{grade}','{stClass}')"
     conn.execute(sql)
     conn.commit()
 
@@ -295,10 +295,13 @@ def camera_shot(conn):
     if keras_file is not None:
         model_directory = "./model"
         model_path = f"{model_directory}/{keras_file.name}"
+        
+    test_detection.catch_face_info_re("tmp", 20)
+    
     if st.button("开始拍照签到"):
         student_id = test_detection.face_test(model_path)
         #获取当前系统日期
-        current_date = datetime.date.today()
+        current_date = str(datetime.date.today())
         add_signin(conn, current_date, student_id)
         
     
