@@ -165,6 +165,8 @@ def face_test2():
         cascade_path = "haarcascade_frontalface_alt2.xml"
         # 加载图片
         img = cv2.imread(img_name)
+        st.warning("待识别的的图片：")
+        st.write(img)
         frame_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         # 加载分类器
         cascade = cv2.CascadeClassifier(cascade_path)
