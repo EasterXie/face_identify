@@ -366,7 +366,7 @@ def main():
             selected_genders = st.multiselect('性别' , gender_options)
             selected_grades = st.multiselect('年级' , grade_options)
             selected_classes = st.multiselect('班级', class_options)
-            selected_courseCounts = st.multiselect('类别', courseCount_options)
+            selected_courseCounts = st.multiselect('签到次数', courseCount_options)
 
             recommend_students(conn, selected_genders, selected_grades, selected_classes, selected_courseCounts)
             if st.button('查看所有学生'):
