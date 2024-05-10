@@ -79,16 +79,16 @@ def insert1(conn, date, iD, name, grade, stClass):
 def add_signin(conn, date, iD):
     sql = f"SELECT * FROM STUDENTS_DATA WHERE 学号='{iD}'"
     result = conn.execute(sql).fetchall()
-    print(result)
+    # print(result)
     name = result[0][1]
     gender = result[0][2]
     grade = result[0][3]
     stClass = result[0][4]
     
     sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号='{date+'-'+iD}'"
-    result = conn.execute(sql)
-    print(result)
-    if not result:
+    Result = conn.execute(sql).fetchall()
+
+    if not Result:
         count = result[0][5]+1
         insert1(conn, date, iD, name, grade, stClass)
         update(conn, iD, iD, name, gender, grade, stClass, count)
@@ -139,7 +139,7 @@ def authenticate(username, password):
         return False
 
 
-def add_shop(conn):
+def add_st(conn):
     iD = st.text_input('请输入学生学号：')
     name = st.text_input('请输入学生姓名：')
     gender = st.text_input('请输入学生性别：')
@@ -375,7 +375,7 @@ def main():
             delete_all(conn)
             
         elif choice == "添加学生信息":
-            add_shop(conn)
+            add_st(conn)
 
         elif choice == "导入Excel数据":
             excel_path = st.file_uploader("选择Excel文件", type="xlsx")
