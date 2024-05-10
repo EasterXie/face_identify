@@ -87,6 +87,7 @@ def add_signin(conn, date, iD):
     
     sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号='{date+'-'+iD}'"
     result = conn.execute(sql)
+    print(result)
     if not result:
         count = result[0][5]+1
         insert1(conn, date, iD, name, grade, stClass)
