@@ -103,8 +103,10 @@ def show_signin(conn):
         columns = ['日期学号', '姓名', '年级', '班级']
         df = pd.DataFrame(result, columns=columns)
         st.dataframe(df)
+        return True
     else:
         st.error('没有签到信息')
+        return False
 
 def show_single_signin(conn, date):
     sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号 LIKE '{date}%'"
@@ -332,8 +334,8 @@ def camera_shot(conn):
     sup_date = st.text_input("输入补充签到的日期以此格式 2024-05-10 ")
     sup_id = st.text_input("输入补充签到的学号")
     if st.button("补签"):
-        add_signin(conn, sup_date, sup_id)
-        st.success("补签成功")
+        if add_signin(conn, sup_date, sup_id):
+            st.success("补签成功")
     
 def main():
     # 创建或获取 session_state 对象
