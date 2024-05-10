@@ -151,7 +151,7 @@ def face_test(model_path):
     return labels_df.loc[idx,'id']
 
 
-def face_test2(model_path):
+def face_test2():
     catch_face_info_re('./tmp',20)
     
     if st.button("签到"):
@@ -176,8 +176,8 @@ def face_test2(model_path):
         image = img[y - 10: y + h + 10, x - 10: x + w + 10]
         # st.write(image)
         model = Model()
-        # model.load_model("./model/test_model.keras")    # model 可能需要修改
-        model.load_model(model_path)    # model 可能需要修改
+        model.load_model("./model/test_model.keras")    # model 可能需要修改
+        # model.load_model(model_path)    # model 可能需要修改
         res = model.face_predict(image)
         labels_df = pd.read_csv('./data/num_to_labels_test.txt',sep=',',header=None)  # label 需要修改
         # st.write(labels_df)
