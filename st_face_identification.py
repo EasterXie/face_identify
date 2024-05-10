@@ -68,10 +68,13 @@ def create_connection():
 def insert1(conn, date, iD, name, grade, stClass):
     print(f"date = {date}")
     print(f"iD = {iD}")
-    sql = f"INSERT INTO SIGNIN_DATA (日期学号,姓名,年级,班级) VALUES " \
-          f"('{date+'-'+iD}','{name}','{grade}','{stClass}')"
-    conn.execute(sql)
-    conn.commit()
+    sql = f"SELECT * FROM SIGNIN_DATA WHERE 日期学号='{date+'-'+iD}'"
+    result = conn.execute(sql)
+    if not result:
+        sql = f"INSERT INTO SIGNIN_DATA (日期学号,姓名,年级,班级) VALUES " \
+            f"('{date+'-'+iD}','{name}','{grade}','{stClass}')"
+        conn.execute(sql)
+        conn.commit()
 
 def add_signin(conn, date, iD):
     sql = f"SELECT * FROM STUDENTS_DATA WHERE 学号='{iD}'"
@@ -305,7 +308,17 @@ def camera_shot(conn):
         #获取当前系统日期
         current_date = str(datetime.date.today())
         add_signin(conn, current_date, student_id)
-        
+
+        sql = f"SELECT * FROM STUDENTS_DATA WHERE 学号='{student_id}'"
+        result = conn.execute(sql).fetchall()
+
+        if result:
+            st.write('日期：', current_date)
+            st.write('学号：', result[0][0])
+            st.write('姓名：', result[0][1])
+            st.write('签到次数：', result[0][5])
+        else:
+            st.error('未找到该学生')
     
     
 def main():

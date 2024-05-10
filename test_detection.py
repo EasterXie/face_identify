@@ -128,8 +128,8 @@ def face_test(model_path):
     # 加载图片
     img = cv2.imread(img_name)
     
-    st.warning("待识别的的图片：")
-    st.write(img)
+    # st.warning("待识别的的图片：")
+    # st.write(img)
     
     frame_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # 加载分类器
