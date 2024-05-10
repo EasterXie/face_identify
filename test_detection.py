@@ -149,6 +149,45 @@ def face_test(model_path):
     # st.write("res is what:")
     # st.write(labels_df.loc[idx,'id'])
     return labels_df.loc[idx,'id']
+
+
+def face_test2(model_path):
+    catch_face_info_re('./tmp',20)
     
+    if st.button("签到"):
+        img_name = f'./tmp/frontalface_19.jpg'
+        
+        # if st.button("签到"):
+        # 加载图片
+        # 框住人脸的矩形边框颜色
+        color = (0, 255, 0)
+        # 人脸识别分类器本地存储路径
+        cascade_path = "haarcascade_frontalface_alt2.xml"
+        # 加载图片
+        img = cv2.imread(img_name)
+        frame_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # 加载分类器
+        cascade = cv2.CascadeClassifier(cascade_path)
+
+        # 利用分类器识别出哪个区域为人脸
+        faceRect = cascade.detectMultiScale(frame_gray, scaleFactor=1.2, minNeighbors=3, minSize=(32, 32))
+        x, y, w, h = faceRect[0]
+        # 截取脸部图像提交给模型识别这是谁
+        image = img[y - 10: y + h + 10, x - 10: x + w + 10]
+        # st.write(image)
+        model = Model()
+        # model.load_model("./model/test_model.keras")    # model 可能需要修改
+        model.load_model(model_path)    # model 可能需要修改
+        res = model.face_predict(image)
+        labels_df = pd.read_csv('./data/num_to_labels_test.txt',sep=',',header=None)  # label 需要修改
+        # st.write(labels_df)
+        labels_df.columns = ['id','index']
+        res = np.array(res)
+        idx = np.argmax(res[0,:])
+        st.write("res is what:")
+        st.write(labels_df.loc[idx,'id'])
+        return labels_df.loc[idx,'id']
+
+
 if __name__ == "__main__":
-    face_test()
+    face_test2()
